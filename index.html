@@ -1,2 +1,63 @@
-Hello World
-HBassinot
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>EMove</title>
+        <script src="js/papaparse.min.js" type="text/javascript"></script>
+        <script src="js/standaloneDB.js" type="text/javascript"></script>
+        <script src="js/jquery-3.1.1.min.js" type="text/javascript"></script>
+    </head>
+
+    <body>
+        <todo-app>
+            <div class="app-root-loader">Loading, please wait...</div>
+        </todo-app>
+
+        <textarea id="datas" rows="4" cols="50"></textarea>
+
+        <button type="button" id="parse">CLICK ME</button>
+        <div id="debug">
+            <div id="debug_db"></div>
+        </div>
+
+        <script>
+var csv;
+        $("#parse").click(function() {
+            
+            t = $("#datas").val();
+            csv = Papa.parse(t,{quotes:true,delimiter:"\t",newline:""});
+            csvArray = csv.data;
+            for (var ad in csvArray) {
+                row = csvArray[ad];
+                date = row[0].trim();
+                description = row[1].trim();
+                debit = row[2].trim();
+                credit = row[3].trim();
+                amount = row[4].trim();
+                
+                if(debit != "" && credit == "") {
+                    type = TYPE_DEBIT;
+                    ope_amount = parseCSVDataNumber(debit);
+                } else if (debit == "" && credit != "") {
+                    type = TYPE_CREDIT;
+                    ope_amount = parseCSVDataNumber(credit);
+                } else {
+                    continue;
+                }
+
+                createOperation(date, description, type, ope_amount, 1)
+            }
+
+
+        });
+
+function parseCSVDataNumber(str) {
+    return parseFloat(str.replace(',','.').replace(' ',''));
+}
+
+        </script>
+
+    </body>
+</html>
+
+
